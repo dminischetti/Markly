@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="960" height="600" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Markly light theme mock screenshot</title>
+  <desc id="desc">Illustration of the Markly application in light mode showing sidebar, editor, and preview pane.</desc>
+  <defs>
+    <linearGradient id="sidebarGradient" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f6f6f8" />
+      <stop offset="100%" stop-color="#ececf2" />
+    </linearGradient>
+    <linearGradient id="contentGradient" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f4f6fb" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="600" rx="32" fill="#f4f6fb" stroke="#d4d7e5" stroke-width="3" />
+  <rect x="40" y="48" width="880" height="504" rx="24" fill="#ffffff" stroke="#ccd0df" stroke-width="2" />
+  <rect x="64" y="76" width="220" height="456" rx="20" fill="url(#sidebarGradient)" stroke="#d4d7e5" stroke-width="1.5" />
+  <rect x="308" y="76" width="276" height="456" rx="20" fill="url(#contentGradient)" stroke="#d4d7e5" stroke-width="1.5" />
+  <rect x="612" y="76" width="276" height="456" rx="20" fill="#ffffff" stroke="#d4d7e5" stroke-width="1.5" />
+  <rect x="308" y="76" width="276" height="56" rx="18" fill="#eef1fa" />
+  <rect x="612" y="76" width="276" height="56" rx="18" fill="#eef1fa" />
+  <rect x="84" y="104" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="160" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="216" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="272" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="328" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="384" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="440" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="84" y="496" width="180" height="36" rx="12" fill="#ffffff" stroke="#c0c4d8" stroke-width="1" />
+  <rect x="332" y="152" width="228" height="12" rx="6" fill="#bcc1d6" />
+  <rect x="332" y="176" width="204" height="8" rx="4" fill="#dce0ee" />
+  <rect x="332" y="196" width="188" height="8" rx="4" fill="#dce0ee" />
+  <rect x="332" y="216" width="212" height="8" rx="4" fill="#dce0ee" />
+  <rect x="332" y="236" width="198" height="8" rx="4" fill="#dce0ee" />
+  <rect x="332" y="256" width="146" height="8" rx="4" fill="#dce0ee" />
+  <rect x="636" y="152" width="228" height="12" rx="6" fill="#bcc1d6" />
+  <rect x="636" y="176" width="204" height="8" rx="4" fill="#e4e7f3" />
+  <rect x="636" y="196" width="188" height="8" rx="4" fill="#e4e7f3" />
+  <rect x="636" y="216" width="212" height="8" rx="4" fill="#e4e7f3" />
+  <rect x="636" y="236" width="198" height="8" rx="4" fill="#e4e7f3" />
+  <rect x="636" y="256" width="166" height="8" rx="4" fill="#e4e7f3" />
+  <rect x="636" y="276" width="128" height="8" rx="4" fill="#e4e7f3" />
+  <circle cx="136" cy="120" r="6" fill="#8f95b1" />
+  <circle cx="156" cy="120" r="6" fill="#8f95b1" />
+  <circle cx="176" cy="120" r="6" fill="#8f95b1" />
+  <rect x="84" y="72" width="132" height="16" rx="8" fill="#c3c8dc" />
+  <rect x="724" y="96" width="120" height="24" rx="12" fill="#ffffff" stroke="#c0c4d8" />
+  <text x="88" y="88" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" fill="#6b6f82" font-weight="600">MARKLY</text>
+  <text x="332" y="118" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="16" fill="#5a5f76" font-weight="600">Weekly planning doc.md</text>
+  <text x="636" y="118" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="16" fill="#5a5f76" font-weight="600">Live preview</text>
+  <text x="724" y="112" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#7d8198">Public</text>
+</svg>
