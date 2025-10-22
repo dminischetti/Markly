@@ -42,15 +42,15 @@
 [data-theme="dark"],
 body[data-theme="dark"],
 html[data-theme="dark"] {
-  --oklch-bg: oklch(0.15 0.01 255);
-  --oklch-surface: oklch(0.20 0.015 250);
-  --oklch-layer: oklch(0.28 0.03 250);
-  --oklch-layer-subtle: oklch(0.35 0.035 250);
-  --oklch-border: oklch(0.40 0.04 250);
-  --oklch-border-strong: oklch(0.55 0.05 250);
-  --oklch-text: oklch(0.95 0.015 255);
-  --oklch-muted: oklch(0.65 0.02 252);
-  --oklch-subtle: oklch(0.75 0.02 252);
+  --oklch-bg: oklch(0.13 0.01 255);
+  --oklch-surface: oklch(0.18 0.015 250);
+  --oklch-layer: oklch(0.24 0.035 250);
+  --oklch-layer-subtle: oklch(0.32 0.04 250);
+  --oklch-border: oklch(0.46 0.045 252);
+  --oklch-border-strong: oklch(0.62 0.06 252);
+  --oklch-text: oklch(0.97 0.015 255);
+  --oklch-muted: oklch(0.70 0.022 252);
+  --oklch-subtle: oklch(0.80 0.018 252);
   --oklch-accent: oklch(0.75 0.18 210);
   --oklch-accent-soft: color-mix(in oklch, var(--oklch-accent) 18%, transparent);
   --oklch-accent-strong: oklch(0.65 0.24 210);
@@ -414,6 +414,27 @@ textarea:focus-visible {
   color: var(--oklch-accent-contrast);
 }
 
+[data-theme="dark"] .sidebar {
+  background: color-mix(in oklch, var(--oklch-layer) 88%, transparent);
+  border-right-color: color-mix(in oklch, var(--oklch-border) 65%, transparent);
+  box-shadow: inset -1px 0 0 color-mix(in oklch, var(--oklch-border) 25%, transparent);
+}
+
+[data-theme="dark"] .sidebar__search {
+  background: color-mix(in oklch, var(--oklch-layer) 94%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border-strong) 45%, transparent);
+}
+
+[data-theme="dark"] .sidebar__search input {
+  color: var(--oklch-text);
+}
+
+[data-theme="dark"] .sidebar__tags button {
+  background: color-mix(in oklch, var(--oklch-layer-subtle) 90%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border-strong) 50%, transparent);
+  color: color-mix(in oklch, var(--oklch-text) 85%, var(--oklch-subtle) 15%);
+}
+
 .sidebar__list {
   display: flex;
   flex-direction: column;
@@ -486,6 +507,22 @@ textarea:focus-visible {
 .note-item.active .note-item__chevron {
   opacity: 1;
   color: var(--oklch-accent-contrast);
+}
+
+[data-theme="dark"] .note-item {
+  background: color-mix(in oklch, var(--oklch-layer-subtle) 88%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border-strong) 55%, transparent);
+  box-shadow: 0 18px 36px color-mix(in oklch, var(--oklch-border) 28%, transparent);
+}
+
+[data-theme="dark"] .note-item__meta {
+  color: color-mix(in oklch, var(--oklch-subtle) 75%, transparent);
+}
+
+[data-theme="dark"] .note-item:hover,
+[data-theme="dark"] .note-item:focus-visible {
+  background: color-mix(in oklch, var(--oklch-accent) 24%, var(--oklch-layer-subtle) 76%);
+  border-color: color-mix(in oklch, var(--oklch-accent) 70%, var(--oklch-border-strong) 30%);
 }
 
 .sidebar-backdrop {
@@ -638,6 +675,22 @@ textarea:focus-visible {
 .note-meta__field input:focus-visible {
   border-color: var(--oklch-accent);
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--oklch-accent) 24%, transparent);
+}
+
+[data-theme="dark"] .note-meta__grid {
+  background: color-mix(in oklch, var(--oklch-layer) 90%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border) 60%, transparent);
+  box-shadow: 0 20px 40px color-mix(in oklch, var(--oklch-border) 22%, transparent);
+}
+
+[data-theme="dark"] .note-meta__field input {
+  background: color-mix(in oklch, var(--oklch-layer) 94%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border-strong) 52%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--oklch-border) 30%, transparent);
+}
+
+[data-theme="dark"] .note-meta__label {
+  color: color-mix(in oklch, var(--oklch-subtle) 80%, transparent);
 }
 
 .note-meta__toggle {
