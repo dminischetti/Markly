@@ -34,32 +34,39 @@ if ($slug !== null) {
     <?php echo Markly::renderHeadAssets(['css_href' => '/public/md-editor.css', 'js_src' => '/public/md-editor.js']); ?>
 </head>
 <body class="public-body">
-    <header class="public-header">
-        <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
-        <nav><a href="/login.php" class="btn-link">Sign in</a></nav>
-    </header>
-    <main class="public-note" role="main">
-        <?php if ($note): ?>
-            <article class="note-view">
-                <header>
-                    <h2><?php echo htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h2>
-                    <?php if ($note['tags'] !== ''): ?>
-                        <ul class="tag-list">
-                            <?php foreach (explode(',', (string)$note['tags']) as $tag): ?>
-                                <li>#<?php echo htmlspecialchars($tag, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-                </header>
-                <article id="publicContent" data-raw="<?php echo htmlspecialchars($note['content'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" class="prose"></article>
-            </article>
-        <?php else: ?>
-            <div class="empty-state">
-                <h2>Note not found</h2>
-                <p>This public note is no longer available.</p>
+    <div class="public-shell">
+        <header class="public-header" role="banner">
+            <div class="public-brand">
+                <span class="public-logo" aria-hidden="true">✶</span>
+                <h1 class="public-title"><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
             </div>
-        <?php endif; ?>
-    </main>
+            <nav class="public-nav" aria-label="Primary">
+                <a href="/login.php" class="btn-link">Sign in</a>
+            </nav>
+        </header>
+        <main class="public-note" role="main">
+            <?php if ($note): ?>
+                <article class="note-view" aria-label="Shared note">
+                    <header class="note-view__header">
+                        <h2><?php echo htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h2>
+                        <?php if ($note['tags'] !== ''): ?>
+                            <ul class="tag-list" aria-label="Tags">
+                                <?php foreach (explode(',', (string)$note['tags']) as $tag): ?>
+                                    <li>#<?php echo htmlspecialchars($tag, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    </header>
+                    <article id="publicContent" data-raw="<?php echo htmlspecialchars($note['content'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" class="prose"></article>
+                </article>
+            <?php else: ?>
+                <div class="empty-state" role="status">
+                    <h2>Note not found</h2>
+                    <p>This public note is no longer available.</p>
+                </div>
+            <?php endif; ?>
+        </main>
+    </div>
     <?php echo Markly::renderFootAssets(['css_href' => '/public/md-editor.css', 'js_src' => '/public/md-editor.js']); ?>
     <script>
     if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
@@ -126,53 +133,96 @@ $boot = [
     <div class="app-shell" id="app" data-theme="<?php echo htmlspecialchars($initialTheme, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
         <aside class="sidebar" id="sidebar" aria-label="Notes list">
             <div class="sidebar__header">
-                <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
-                <button id="sidebarClose" class="icon-btn" aria-label="Close sidebar">✕</button>
+                <div class="sidebar__brand">
+                    <span class="sidebar__logo" aria-hidden="true">✶</span>
+                    <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
+                </div>
+                <button id="sidebarClose" class="icon-btn icon-btn--ghost" aria-label="Close sidebar">
+                    <span class="icon" aria-hidden="true">✕</span>
+                    <span class="sr-only">Close sidebar</span>
+                </button>
             </div>
             <p class="sidebar__tagline"><?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
             <div class="sidebar__search">
+                <span class="sidebar__search-icon" aria-hidden="true">⌕</span>
                 <input type="search" id="searchInput" placeholder="Search notes" autocomplete="off">
-                <button id="searchClear" class="icon-btn" aria-label="Clear search">⌫</button>
+                <button id="searchClear" class="icon-btn icon-btn--ghost" aria-label="Clear search">
+                    <span class="icon" aria-hidden="true">✕</span>
+                    <span class="sr-only">Clear search</span>
+                </button>
             </div>
-            <div class="sidebar__tags" id="tagList" aria-label="Filter by tag"></div>
-            <div class="sidebar__list" id="noteList" role="list"></div>
-            <button id="newNoteBtn" class="fab" aria-label="New note">+</button>
+            <div class="sidebar__section" aria-live="polite">
+                <div class="sidebar__section-label">Tags</div>
+                <div class="sidebar__tags" id="tagList" aria-label="Filter by tag"></div>
+            </div>
+            <div class="sidebar__section">
+                <div class="sidebar__section-label">Notes</div>
+                <div class="sidebar__list" id="noteList" role="list"></div>
+            </div>
+            <button id="newNoteBtn" class="fab" aria-label="New note">
+                <span class="icon" aria-hidden="true">＋</span>
+                <span class="sr-only">Create a new note</span>
+            </button>
         </aside>
         <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
         <main class="workspace" id="workspace">
-            <header class="topbar">
-                <button id="sidebarToggle" class="icon-btn" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="false">☰</button>
-                <div class="crumb">
-                    <span id="noteStatus">Draft</span>
+            <header class="topbar" role="banner">
+                <div class="topbar__left">
+                    <button id="sidebarToggle" class="icon-btn icon-btn--ghost" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="false">
+                        <span class="icon" aria-hidden="true">☰</span>
+                        <span class="sr-only">Toggle sidebar</span>
+                    </button>
+                    <div class="crumb" role="status" aria-live="polite">
+                        <span class="crumb__pulse" aria-hidden="true"></span>
+                        <span id="noteStatus">Draft</span>
+                    </div>
                 </div>
                 <div class="topbar__actions">
-                    <button id="saveBtn" class="topbar__save" type="button">Save</button>
-                    <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">🌓</button>
-                    <button id="deleteBtn" class="icon-btn" aria-label="Delete note">🗑</button>
-                    <button id="shareBtn" class="icon-btn" aria-label="Toggle public link">🔗</button>
-                    <button id="logoutBtn" class="icon-btn" aria-label="Sign out">⎋</button>
+                    <button id="saveBtn" class="topbar__save" type="button">
+                        <span class="icon" aria-hidden="true">●</span>
+                        <span>Save</span>
+                    </button>
+                    <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
+                        <span class="icon" aria-hidden="true">🌓</span>
+                        <span class="sr-only">Toggle theme</span>
+                    </button>
+                    <button id="deleteBtn" class="icon-btn icon-btn--danger" aria-label="Delete note">
+                        <span class="icon" aria-hidden="true">🗑</span>
+                        <span class="sr-only">Delete note</span>
+                    </button>
+                    <button id="shareBtn" class="icon-btn" aria-label="Toggle public link">
+                        <span class="icon" aria-hidden="true">🔗</span>
+                        <span class="sr-only">Toggle public link</span>
+                    </button>
+                    <button id="logoutBtn" class="icon-btn" aria-label="Sign out">
+                        <span class="icon" aria-hidden="true">⎋</span>
+                        <span class="sr-only">Sign out</span>
+                    </button>
                 </div>
             </header>
             <section class="note-meta" aria-label="Note metadata">
-                <label>
+                <label class="note-meta__field">
                     <span class="label">Title</span>
                     <input id="noteTitle" type="text" placeholder="Untitled note" autocomplete="off">
                 </label>
-                <label>
+                <label class="note-meta__field">
                     <span class="label">Slug</span>
                     <input id="noteSlug" type="text" placeholder="auto-generated" autocomplete="off">
                 </label>
-                <label>
+                <label class="note-meta__field">
                     <span class="label">Tags</span>
                     <input id="noteTags" type="text" placeholder="comma,separated" autocomplete="off">
                 </label>
-                <label class="toggle">
+                <label class="toggle note-meta__toggle">
                     <input type="checkbox" id="notePublic">
-                    <span>Public</span>
+                    <span class="toggle__track" aria-hidden="true"></span>
+                    <span class="toggle__label">Public</span>
                 </label>
             </section>
             <section class="editor-shell" aria-label="Editor">
-                <?php echo Markly::render(); ?>
+                <div class="editor-surface">
+                    <?php echo Markly::render(); ?>
+                </div>
             </section>
             <section class="backlinks" id="backlinks" aria-label="Backlinks"></section>
         </main>
@@ -183,6 +233,7 @@ $boot = [
         <button class="note-item" data-slug="">
             <span class="note-item__title"></span>
             <span class="note-item__meta"></span>
+            <span class="note-item__chevron" aria-hidden="true">›</span>
         </button>
     </template>
     <?php echo Markly::renderFootAssets(['css_href' => '/public/md-editor.css', 'js_src' => '/public/md-editor.js']); ?>
