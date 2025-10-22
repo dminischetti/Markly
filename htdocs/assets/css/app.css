@@ -266,6 +266,33 @@ textarea {
   gap: var(--space-3);
 }
 
+.topbar__save {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-4);
+  height: 2.25rem;
+  background: var(--oklch-accent);
+  color: var(--oklch-accent-ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter var(--transition), opacity var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.topbar__save:hover:not(:disabled),
+.topbar__save:focus-visible {
+  filter: brightness(0.95);
+  outline: none;
+}
+
+.topbar__save:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .icon-btn {
   border: 1px solid var(--oklch-outline);
   background: var(--oklch-surface-alt);

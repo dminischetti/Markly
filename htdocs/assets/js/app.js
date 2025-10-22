@@ -65,6 +65,7 @@ const elements = {
   deleteBtn: document.getElementById('deleteBtn'),
   toastContainer: document.getElementById('toastContainer'),
   backlinks: document.getElementById('backlinks'),
+  saveBtn: document.getElementById('saveBtn'),
 };
 
 const state = {
@@ -80,6 +81,7 @@ const state = {
   outboxSize: 0,
   routeGuard: false,
   pendingPublic: null,
+  saving: false,
 };
 
 function isTempId(id) {
@@ -163,6 +165,9 @@ function setupEventListeners() {
   });
 
   elements.newNoteBtn?.addEventListener('click', createNewNote);
+  elements.saveBtn?.addEventListener('click', () => {
+    saveCurrentNote();
+  });
   elements.searchInput?.addEventListener('input', handleSearch);
   elements.searchClear?.addEventListener('click', clearSearch);
   elements.noteTitle?.addEventListener('input', markDirty);
@@ -190,6 +195,7 @@ function setupEventListeners() {
   });
 
   onOutboxChange(updateOutboxIndicator);
+  updateSaveButtonState();
 }
 
 async function loadNotes() {
@@ -348,6 +354,7 @@ function applyNote(note) {
   };
   state.pendingPublic = state.current.is_public;
   state.dirty = false;
+  updateSaveButtonState();
 
   setEditorValue(state.current.content);
   elements.noteTitle.value = state.current.title || '';
@@ -374,6 +381,7 @@ function createNewNote() {
   };
   state.dirty = true;
   state.pendingPublic = false;
+  updateSaveButtonState();
   setEditorValue('');
   elements.noteTitle.value = '';
   elements.noteSlug.value = '';
@@ -388,6 +396,7 @@ function createNewNote() {
 function markDirty() {
   state.dirty = true;
   updateStatus('Unsaved changes');
+  updateSaveButtonState();
 }
 
 function updateStatus(text) {
@@ -396,8 +405,21 @@ function updateStatus(text) {
   }
 }
 
+function updateSaveButtonState() {
+  if (!elements.saveBtn) {
+    return;
+  }
+  const shouldDisable = state.saving || (!state.dirty && !state.current?.temp);
+  elements.saveBtn.disabled = shouldDisable;
+  elements.saveBtn.textContent = state.saving ? 'Saving…' : 'Save';
+  elements.saveBtn.setAttribute('aria-busy', state.saving ? 'true' : 'false');
+}
+
 async function saveCurrentNote() {
   if (!state.current) {
+    return;
+  }
+  if (state.saving) {
     return;
   }
 
@@ -410,9 +432,12 @@ async function saveCurrentNote() {
 
   if (!state.dirty && !state.current.temp) {
     updateStatus('Saved');
+    updateSaveButtonState();
     return;
   }
 
+  state.saving = true;
+  updateSaveButtonState();
   updateStatus('Saving…');
   const dismissPending = showPendingToast('Saving…');
 
@@ -479,6 +504,8 @@ async function saveCurrentNote() {
     console.error(err);
   } finally {
     dismissPending();
+    state.saving = false;
+    updateSaveButtonState();
   }
 }
 
@@ -533,6 +560,7 @@ async function queueCreate(payload) {
   cacheNote(tempNote).catch(() => {});
   await queueOutbox('create', { ...payload, tempId });
   state.dirty = false;
+  updateSaveButtonState();
   updateStatus('Queued');
   showToast('Queued for sync', 'info');
   updateOutboxIndicator();
@@ -555,6 +583,7 @@ async function queueUpdate(payload) {
   });
   state.current.updated_at = new Date().toISOString();
   state.dirty = false;
+  updateSaveButtonState();
   updateCollections(state.current);
   updateStatus('Queued');
   showToast('Queued for sync', 'info');
