@@ -67,7 +67,11 @@ const elements = {
   backlinks: document.getElementById('backlinks'),
   saveBtn: document.getElementById('saveBtn'),
   saveBtnLabel: document.querySelector('#saveBtn .btn__label'),
-  statusPill: document.querySelector('.topbar__status'),
+  statusPill: document.querySelector('.workspace-footer__status'),
+  focusToggle: document.getElementById('focusToggle'),
+  metaDetails: document.getElementById('metaDetails'),
+  filterButtons: Array.from(document.querySelectorAll('.sidebar__filter')),
+  themeToggleIcon: document.querySelector('#themeToggle use'),
   quickActions: Array.from(document.querySelectorAll('[data-quick-action]')),
 };
 
@@ -85,6 +89,8 @@ const state = {
   routeGuard: false,
   pendingPublic: null,
   saving: false,
+  filterMode: 'all',
+  focusMode: false,
 };
 
 function isTempId(id) {
@@ -188,6 +194,13 @@ function setupEventListeners() {
     handlePublishToggle();
   });
   elements.deleteBtn?.addEventListener('click', deleteCurrentNote);
+  if (elements.focusToggle) {
+    elements.focusToggle.setAttribute('aria-pressed', 'false');
+  }
+  elements.focusToggle?.addEventListener('click', () => toggleFocusMode());
+  elements.filterButtons?.forEach((button) => {
+    button.addEventListener('click', () => setFilterMode(button.dataset.filter));
+  });
   elements.quickActions?.forEach((button) => {
     button.addEventListener('click', () => handleQuickAction(button.dataset.quickAction));
   });
@@ -204,8 +217,13 @@ function setupEventListeners() {
     if (event.key === 'Escape') {
       toggleSidebar(false);
     }
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'f') {
+      event.preventDefault();
+      toggleFocusMode();
+    }
   });
 
+  setFilterMode(state.filterMode);
   onOutboxChange(updateOutboxIndicator);
   updateSaveButtonState();
 }
@@ -421,10 +439,9 @@ function updateStatus(text) {
   if (elements.statusPill) {
     const nextState = text.toLowerCase().replace(/[^a-z0-9]+/gi, '-');
     elements.statusPill.dataset.state = nextState;
-    elements.statusPill.classList.remove('topbar__status--pulse');
-    // Trigger reflow so the animation can replay
+    elements.statusPill.classList.remove('is-updated');
     void elements.statusPill.offsetWidth;
-    elements.statusPill.classList.add('topbar__status--pulse');
+    elements.statusPill.classList.add('is-updated');
   }
 }
 
@@ -760,8 +777,52 @@ function collectTags(notes) {
   return Array.from(set).sort();
 }
 
+function filterByMode(notes, mode) {
+  const target = (mode || 'all').toLowerCase();
+  switch (target) {
+    case 'favorites':
+      return notes.filter((note) => (note.tags || []).some((tag) => tag.toLowerCase() === 'favorite'));
+    case 'public':
+      return notes.filter((note) => Boolean(note.is_public));
+    case 'drafts':
+      return notes.filter((note) => !note.is_public);
+    default:
+      return notes;
+  }
+}
+
+function updateFilterButtons() {
+  if (!elements.filterButtons) {
+    return;
+  }
+  elements.filterButtons.forEach((button) => {
+    const current = (button.dataset.filter || 'all').toLowerCase();
+    const isActive = current === state.filterMode;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
+
+function setFilterMode(mode) {
+  const normalized = (mode || 'all').toLowerCase();
+  const allowed = ['all', 'favorites', 'public', 'drafts'];
+  if (!allowed.includes(normalized)) {
+    return;
+  }
+  if (state.filterMode === normalized) {
+    updateFilterButtons();
+    return;
+  }
+  state.filterMode = normalized;
+  updateFilterButtons();
+  applyFilters();
+}
+
 function applyFilters() {
   let filtered = [...state.allNotes];
+  if (state.filterMode && state.filterMode !== 'all') {
+    filtered = filterByMode(filtered, state.filterMode);
+  }
   if (state.filterTag) {
     filtered = filtered.filter((note) => (note.tags || []).includes(state.filterTag));
   }
@@ -979,13 +1040,31 @@ function replaceTemp(tempId, created) {
 function syncVisibilityControls() {
   const shareActive = Boolean(elements.notePublic?.checked);
   if (elements.shareBtn) {
-    elements.shareBtn.classList.toggle('control-btn--active', shareActive);
+    elements.shareBtn.classList.toggle('btn--active', shareActive);
     elements.shareBtn.setAttribute('aria-pressed', shareActive ? 'true' : 'false');
+  }
+}
+
+function toggleFocusMode(force) {
+  const next = typeof force === 'boolean' ? force : !state.focusMode;
+  state.focusMode = next;
+  document.body.classList.toggle('is-focus-mode', next);
+  if (elements.focusToggle) {
+    elements.focusToggle.setAttribute('aria-pressed', next ? 'true' : 'false');
+  }
+  if (next) {
+    toggleSidebar(false);
+    if (elements.metaDetails) {
+      elements.metaDetails.open = false;
+    }
   }
 }
 
 function toggleSidebar(force) {
   if (!elements.sidebar) return;
+  if (state.focusMode && force !== false) {
+    return;
+  }
   const open = typeof force === 'boolean' ? force : !elements.sidebar.classList.contains('is-open');
   elements.sidebar.classList.toggle('is-open', open);
   elements.sidebarBackdrop?.classList.toggle('is-visible', open);
@@ -1021,6 +1100,11 @@ function toggleTheme() {
   document.body.setAttribute('data-theme', next);
   document.cookie = `${THEME_KEY}=${next}; path=/; max-age=31536000`;
   setStoredTheme(next);
+  if (elements.themeToggleIcon) {
+    const href = next === 'dark' ? '#icon-moon' : '#icon-sun';
+    elements.themeToggleIcon.setAttribute('href', href);
+    elements.themeToggleIcon.setAttribute('xlink:href', href);
+  }
   triggerThemeTransition();
 }
 
