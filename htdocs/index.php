@@ -214,7 +214,7 @@ $boot = [
                         <svg class="icon" aria-hidden="true"><use xlink:href="#icon-menu"></use></svg>
                         <span class="sr-only">Toggle sidebar</span>
                     </button>
-                    <div class="topbar__brand">
+                    <div class="topbar__brand" data-tagline="<?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
                         <span class="topbar__logo" aria-hidden="true">✶</span>
                         <span class="topbar__brand-name"><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span>
                     </div>
@@ -224,27 +224,30 @@ $boot = [
                     </div>
                 </div>
                 <div class="topbar__actions">
-                    <button id="saveBtn" class="btn btn--primary" type="button">
-                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-check"></use></svg>
-                        <span>Save</span>
-                    </button>
-                    <div class="topbar__divider" role="presentation"></div>
-                    <button id="shareBtn" class="control-btn" aria-label="Toggle public link">
-                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-link"></use></svg>
-                        <span class="sr-only">Toggle public link</span>
-                    </button>
-                    <button id="deleteBtn" class="control-btn control-btn--danger" aria-label="Delete note">
-                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-trash"></use></svg>
-                        <span class="sr-only">Delete note</span>
-                    </button>
-                    <button id="themeToggle" class="control-btn" aria-label="Toggle theme">
-                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-theme"></use></svg>
-                        <span class="sr-only">Toggle theme</span>
-                    </button>
-                    <button id="logoutBtn" class="control-btn" aria-label="Sign out">
-                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-logout"></use></svg>
-                        <span class="sr-only">Sign out</span>
-                    </button>
+                    <div class="topbar__group topbar__group--primary" role="group" aria-label="Note actions">
+                        <button id="saveBtn" class="btn btn--primary btn--elevated" type="button">
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-check"></use></svg>
+                            <span class="btn__label" data-default="Save">Save</span>
+                        </button>
+                        <button id="shareBtn" class="control-btn control-btn--accent" aria-label="Toggle public link" aria-pressed="false">
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-link"></use></svg>
+                            <span class="sr-only">Toggle public link</span>
+                        </button>
+                    </div>
+                    <div class="topbar__group topbar__group--secondary" role="group" aria-label="Workspace actions">
+                        <button id="themeToggle" class="control-btn control-btn--ghost" aria-label="Toggle theme">
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-theme"></use></svg>
+                            <span class="sr-only">Toggle theme</span>
+                        </button>
+                        <button id="deleteBtn" class="control-btn control-btn--danger" aria-label="Delete note">
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-trash"></use></svg>
+                            <span class="sr-only">Delete note</span>
+                        </button>
+                        <button id="logoutBtn" class="control-btn control-btn--ghost" aria-label="Sign out">
+                            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-logout"></use></svg>
+                            <span class="sr-only">Sign out</span>
+                        </button>
+                    </div>
                 </div>
             </header>
             <section class="note-meta" aria-label="Note metadata">
@@ -278,6 +281,20 @@ $boot = [
                 </div>
             </section>
             <section class="backlinks" id="backlinks" aria-label="Backlinks"></section>
+            <nav class="mobile-actions" aria-label="Quick actions">
+                <button type="button" class="mobile-actions__btn mobile-actions__btn--primary" data-quick-action="save">
+                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-check"></use></svg>
+                    <span>Save</span>
+                </button>
+                <button type="button" class="mobile-actions__btn" data-quick-action="new">
+                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-plus"></use></svg>
+                    <span>New</span>
+                </button>
+                <button type="button" class="mobile-actions__btn" data-quick-action="theme">
+                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-theme"></use></svg>
+                    <span>Theme</span>
+                </button>
+            </nav>
         </main>
     </div>
     <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>

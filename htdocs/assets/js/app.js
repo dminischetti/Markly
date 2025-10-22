@@ -66,6 +66,9 @@ const elements = {
   toastContainer: document.getElementById('toastContainer'),
   backlinks: document.getElementById('backlinks'),
   saveBtn: document.getElementById('saveBtn'),
+  saveBtnLabel: document.querySelector('#saveBtn .btn__label'),
+  statusPill: document.querySelector('.topbar__status'),
+  quickActions: Array.from(document.querySelectorAll('[data-quick-action]')),
 };
 
 const state = {
@@ -185,6 +188,15 @@ function setupEventListeners() {
     handlePublishToggle();
   });
   elements.deleteBtn?.addEventListener('click', deleteCurrentNote);
+  elements.quickActions?.forEach((button) => {
+    button.addEventListener('click', () => handleQuickAction(button.dataset.quickAction));
+  });
+
+  elements.saveBtn?.addEventListener('animationend', (event) => {
+    if (event.animationName === 'btnSuccessPulse') {
+      event.currentTarget.classList.remove('btn--success');
+    }
+  });
 
   window.addEventListener('online', handleOnline);
   window.addEventListener('offline', handleOffline);
@@ -361,6 +373,7 @@ function applyNote(note) {
   elements.noteSlug.value = state.current.slug || '';
   elements.noteTags.value = state.current.tags.join(',');
   elements.notePublic.checked = state.current.is_public;
+  syncVisibilityControls();
   updateStatus('Saved');
   highlightActiveNote(state.current.id, state.current.slug);
   toggleSidebar(false);
@@ -387,6 +400,7 @@ function createNewNote() {
   elements.noteSlug.value = '';
   elements.noteTags.value = '';
   elements.notePublic.checked = false;
+  syncVisibilityControls();
   highlightActiveNote(null, null);
   updateStatus('Draft');
   pushRoute('');
@@ -400,8 +414,17 @@ function markDirty() {
 }
 
 function updateStatus(text) {
-  if (elements.noteStatus) {
-    elements.noteStatus.textContent = text;
+  if (!elements.noteStatus) {
+    return;
+  }
+  elements.noteStatus.textContent = text;
+  if (elements.statusPill) {
+    const nextState = text.toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+    elements.statusPill.dataset.state = nextState;
+    elements.statusPill.classList.remove('topbar__status--pulse');
+    // Trigger reflow so the animation can replay
+    void elements.statusPill.offsetWidth;
+    elements.statusPill.classList.add('topbar__status--pulse');
   }
 }
 
@@ -411,8 +434,33 @@ function updateSaveButtonState() {
   }
   const shouldDisable = state.saving || (!state.dirty && !state.current?.temp);
   elements.saveBtn.disabled = shouldDisable;
-  elements.saveBtn.textContent = state.saving ? 'Saving…' : 'Save';
+  const label = elements.saveBtnLabel;
+  const defaultLabel = label?.dataset?.default || 'Save';
+  const nextLabel = state.saving ? 'Saving…' : defaultLabel;
+  if (label) {
+    label.textContent = nextLabel;
+  } else {
+    elements.saveBtn.textContent = nextLabel;
+  }
   elements.saveBtn.setAttribute('aria-busy', state.saving ? 'true' : 'false');
+}
+
+function flashSaveSuccess() {
+  if (!elements.saveBtn) {
+    return;
+  }
+  elements.saveBtn.classList.remove('btn--success');
+  void elements.saveBtn.offsetWidth;
+  elements.saveBtn.classList.add('btn--success');
+}
+
+function triggerThemeTransition() {
+  document.documentElement.classList.add('is-theme-transitioning');
+  document.body.classList.add('is-theme-transitioning');
+  window.setTimeout(() => {
+    document.documentElement.classList.remove('is-theme-transitioning');
+    document.body.classList.remove('is-theme-transitioning');
+  }, 360);
 }
 
 async function saveCurrentNote() {
@@ -487,6 +535,7 @@ async function saveCurrentNote() {
       state.pendingPublic = Boolean(saved.is_public);
       updateStatus('Saved');
       showToast('Saved', 'success');
+      flashSaveSuccess();
     }
   } catch (err) {
     if (err instanceof ApiError && err.status === 409) {
@@ -563,6 +612,7 @@ async function queueCreate(payload) {
   updateSaveButtonState();
   updateStatus('Queued');
   showToast('Queued for sync', 'info');
+  flashSaveSuccess();
   updateOutboxIndicator();
 }
 
@@ -587,6 +637,7 @@ async function queueUpdate(payload) {
   updateCollections(state.current);
   updateStatus('Queued');
   showToast('Queued for sync', 'info');
+  flashSaveSuccess();
   updateOutboxIndicator();
 }
 
@@ -776,11 +827,41 @@ function clearSearch() {
   applyFilters();
 }
 
+function handleQuickAction(action) {
+  if (!action) {
+    return;
+  }
+  const intent = action.toLowerCase();
+  switch (intent) {
+    case 'save':
+      if (elements.saveBtn?.disabled) {
+        return;
+      }
+      try {
+        elements.saveBtn?.focus({ preventScroll: true });
+      } catch (err) {
+        elements.saveBtn?.focus();
+      }
+      elements.saveBtn?.click();
+      break;
+    case 'new':
+      createNewNote();
+      break;
+    case 'theme':
+      toggleTheme();
+      break;
+    default:
+      break;
+  }
+}
+
 function handlePublishToggle() {
   if (!state.current) return;
   const makePublic = elements.notePublic.checked;
   state.current.is_public = makePublic;
   state.pendingPublic = makePublic;
+
+  syncVisibilityControls();
 
   if (!state.current.id || state.current.temp) {
     updateStatus('Queued');
@@ -803,12 +884,14 @@ function handlePublishToggle() {
       updateStatus('Saved');
       showToast(makePublic ? 'Note published' : 'Note made private', 'success');
       state.pendingPublic = null;
+      syncVisibilityControls();
     })
     .catch((err) => {
       elements.notePublic.checked = !makePublic;
       state.current.is_public = !makePublic;
       showToast('Publish failed', 'error');
       console.error(err);
+      syncVisibilityControls();
     });
 }
 
@@ -893,6 +976,14 @@ function replaceTemp(tempId, created) {
   applyNote(created);
 }
 
+function syncVisibilityControls() {
+  const shareActive = Boolean(elements.notePublic?.checked);
+  if (elements.shareBtn) {
+    elements.shareBtn.classList.toggle('control-btn--active', shareActive);
+    elements.shareBtn.setAttribute('aria-pressed', shareActive ? 'true' : 'false');
+  }
+}
+
 function toggleSidebar(force) {
   if (!elements.sidebar) return;
   const open = typeof force === 'boolean' ? force : !elements.sidebar.classList.contains('is-open');
@@ -930,6 +1021,7 @@ function toggleTheme() {
   document.body.setAttribute('data-theme', next);
   document.cookie = `${THEME_KEY}=${next}; path=/; max-age=31536000`;
   setStoredTheme(next);
+  triggerThemeTransition();
 }
 
 function handleLogout() {
