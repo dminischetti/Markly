@@ -18,6 +18,7 @@ import {
   getCachedList,
   getCachedNote,
   getCachedNoteBySlug,
+  removeCachedNote,
   queueOutbox,
   processOutbox,
   onOutboxChange,
@@ -80,6 +81,10 @@ const state = {
   routeGuard: false,
   pendingPublic: null,
 };
+
+function isTempId(id) {
+  return typeof id === 'string' && id.startsWith('temp-');
+}
 
 const savedTheme = getStoredTheme();
 if (savedTheme) {
@@ -177,6 +182,16 @@ async function loadNotes() {
 }
 
 async function openNoteById(id, options = {}) {
+  if (!id) {
+    return;
+  }
+  if (isTempId(id)) {
+    const loaded = await loadTempNote({ id }, options);
+    if (!loaded) {
+      showToast('Draft not available', 'error');
+    }
+    return;
+  }
   const data = await fetchNote(() => getNoteById(id, { useCache: true }), () => getCachedNote(id));
   if (data) {
     applyNote(data.note || data);
@@ -187,6 +202,17 @@ async function openNoteById(id, options = {}) {
 }
 
 async function openNoteBySlug(slug, options = {}) {
+  if (!slug) {
+    return;
+  }
+  const tempMeta = state.allNotes.find((note) => note.slug === slug && isTempId(note.id));
+  if (tempMeta) {
+    const loaded = await loadTempNote({ id: tempMeta.id, slug }, options);
+    if (!loaded) {
+      showToast('Draft not available', 'error');
+    }
+    return;
+  }
   const data = await fetchNote(() => getNoteBySlug(slug, { useCache: true }), () => getCachedNoteBySlug(slug));
   if (data) {
     applyNote(data.note || data);
@@ -225,6 +251,43 @@ async function fetchNote(apiFn, cacheFn) {
   return null;
 }
 
+async function loadTempNote(identifier, options = {}) {
+  let note = null;
+  if (identifier.id) {
+    note = await getCachedNote(identifier.id);
+  }
+  if (!note && identifier.slug) {
+    note = await getCachedNoteBySlug(identifier.slug);
+  }
+  if (!note && identifier.id) {
+    note = state.allNotes.find((n) => String(n.id) === String(identifier.id)) || null;
+  }
+  if (!note && identifier.slug) {
+    note = state.allNotes.find((n) => n.slug === identifier.slug) || null;
+  }
+  if (!note && identifier.id && state.current?.id === identifier.id) {
+    note = state.current;
+  }
+  if (!note) {
+    return false;
+  }
+  const prepared = {
+    id: note.id,
+    slug: note.slug || '',
+    title: note.title || 'Untitled note',
+    tags: Array.isArray(note.tags) ? note.tags : [],
+    content: note.content || '',
+    is_public: Boolean(note.is_public),
+    version: note.version || 1,
+    temp: true,
+  };
+  applyNote(prepared);
+  if (!options.silent) {
+    pushRoute(prepared.slug);
+  }
+  return true;
+}
+
 function applyNote(note) {
   state.current = {
     id: note.id,
@@ -234,6 +297,7 @@ function applyNote(note) {
     content: note.content || '',
     is_public: Boolean(note.is_public),
     version: note.version,
+    temp: Boolean(note.temp),
   };
   state.pendingPublic = state.current.is_public;
   state.dirty = false;
@@ -411,6 +475,7 @@ async function queueCreate(payload) {
     title: payload.title,
     tags: payload.tags ? payload.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
     content: payload.content,
+    version: 1,
     updated_at: new Date().toISOString(),
     is_public: Boolean(payload.makePublic),
     temp: true,
@@ -418,6 +483,7 @@ async function queueCreate(payload) {
   updateCollections(tempNote);
   state.current = tempNote;
   state.pendingPublic = tempNote.is_public;
+  cacheNote(tempNote).catch(() => {});
   await queueOutbox('create', { ...payload, tempId });
   state.dirty = false;
   updateStatus('Queued');
@@ -487,8 +553,11 @@ function normalizeNoteMeta(note) {
     slug: note.slug,
     title: note.title || 'Untitled',
     tags: Array.isArray(note.tags) ? note.tags : (note.tags ? note.tags.split(',').map((t) => t.trim()).filter(Boolean) : []),
+    content: note.content || '',
     updated_at: note.updated_at,
     is_public: Boolean(note.is_public),
+    version: note.version || 1,
+    temp: Boolean(note.temp),
   };
 }
 
@@ -688,6 +757,9 @@ async function syncOutbox() {
               console.error('Queued publish failed', err);
             }
           }
+          if (created) {
+            cacheNote(created).catch(() => {});
+          }
           if (tempId) {
             replaceTemp(tempId, created);
           } else {
@@ -699,11 +771,13 @@ async function syncOutbox() {
         case 'update': {
           const updated = await updateNote(entry.payload);
           updateCollections(updated);
+          cacheNote(updated).catch(() => {});
           break;
         }
         case 'delete': {
           await deleteNote(entry.payload.id);
           removeFromCollections(entry.payload.id);
+          removeCachedNote(entry.payload.id).catch(() => {});
           break;
         }
         case 'publish': {
@@ -730,7 +804,9 @@ async function syncOutbox() {
 function replaceTemp(tempId, created) {
   if (!tempId) return;
   removeFromCollections(tempId);
+  removeCachedNote(tempId).catch(() => {});
   updateCollections(created);
+  cacheNote(created).catch(() => {});
   applyNote(created);
 }
 

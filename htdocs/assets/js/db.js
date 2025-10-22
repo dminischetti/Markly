@@ -73,6 +73,17 @@ export async function cacheNote(note) {
   });
 }
 
+export async function removeCachedNote(id) {
+  if (!id) return;
+  if (!isSupported()) {
+    memoryFallback.notes.delete(id);
+    return;
+  }
+  await withStore('notes', 'readwrite', (store) => {
+    store.delete(id);
+  });
+}
+
 export async function cacheNoteList(notes) {
   if (!isSupported()) {
     memoryFallback.list = notes;
