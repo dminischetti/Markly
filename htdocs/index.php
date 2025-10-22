@@ -130,94 +130,143 @@ $boot = [
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 </head>
 <body class="app-body">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+        <symbol id="icon-menu" viewBox="0 0 24 24" fill="none">
+            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24" fill="none">
+            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </symbol>
+        <symbol id="icon-search" viewBox="0 0 24 24" fill="none">
+            <path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24" fill="none">
+            <path d="m5 12 4 4 10-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="icon-link" viewBox="0 0 24 24" fill="none">
+            <path d="M10.5 13.5 9 15a4 4 0 1 1-5.657-5.657l2.122-2.121A4 4 0 0 1 12 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M13.5 10.5 15 9a4 4 0 0 1 5.657 5.657l-2.122 2.121A4 4 0 0 1 12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="icon-trash" viewBox="0 0 24 24" fill="none">
+            <path d="M5 7h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M16 7v11a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V7m3-3h2a2 2 0 0 1 2 2v1H9V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="icon-theme" viewBox="0 0 24 24" fill="none">
+            <path d="M12 4c-.9 0-1.776.197-2.571.559a8 8 0 1 0 9.012 9.012A6 6 0 0 1 12 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="icon-logout" viewBox="0 0 24 24" fill="none">
+            <path d="M15 16.5 19.5 12 15 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M19.5 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M12 19a7 7 0 1 1 0-14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="icon-arrow-right" viewBox="0 0 24 24" fill="none">
+            <path d="M8 4.5 15.5 12 8 19.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+    </svg>
     <div class="app-shell" id="app" data-theme="<?php echo htmlspecialchars($initialTheme, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
         <aside class="sidebar" id="sidebar" aria-label="Notes list">
-            <div class="sidebar__header">
-                <div class="sidebar__brand">
-                    <span class="sidebar__logo" aria-hidden="true">✶</span>
-                    <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
+            <div class="sidebar__inner">
+                <div class="sidebar__header">
+                    <div class="sidebar__brand">
+                        <span class="sidebar__logo" aria-hidden="true">✶</span>
+                        <div class="sidebar__brand-text">
+                            <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
+                            <p class="sidebar__tagline"><?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
+                        </div>
+                    </div>
+                    <button id="sidebarClose" class="icon-btn icon-btn--ghost sidebar__dismiss" aria-label="Close sidebar">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-x"></use></svg>
+                        <span class="sr-only">Close sidebar</span>
+                    </button>
                 </div>
-                <button id="sidebarClose" class="icon-btn icon-btn--ghost" aria-label="Close sidebar">
-                    <span class="icon" aria-hidden="true">✕</span>
-                    <span class="sr-only">Close sidebar</span>
+                <button id="newNoteBtn" class="sidebar__new" aria-label="New note">
+                    <svg class="icon" aria-hidden="true"><use xlink:href="#icon-plus"></use></svg>
+                    <span>New note</span>
                 </button>
+                <div class="sidebar__search" role="search">
+                    <label class="sr-only" for="searchInput">Search notes</label>
+                    <svg class="icon sidebar__search-icon" aria-hidden="true"><use xlink:href="#icon-search"></use></svg>
+                    <input type="search" id="searchInput" placeholder="Search notes" autocomplete="off">
+                    <button id="searchClear" class="icon-btn icon-btn--ghost" aria-label="Clear search">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-x"></use></svg>
+                        <span class="sr-only">Clear search</span>
+                    </button>
+                </div>
+                <div class="sidebar__section" aria-live="polite">
+                    <div class="sidebar__section-label">Tags</div>
+                    <div class="sidebar__tags" id="tagList" aria-label="Filter by tag"></div>
+                </div>
+                <div class="sidebar__section">
+                    <div class="sidebar__section-label">Notes</div>
+                    <div class="sidebar__list" id="noteList" role="list"></div>
+                </div>
             </div>
-            <p class="sidebar__tagline"><?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
-            <div class="sidebar__search">
-                <span class="sidebar__search-icon" aria-hidden="true">⌕</span>
-                <input type="search" id="searchInput" placeholder="Search notes" autocomplete="off">
-                <button id="searchClear" class="icon-btn icon-btn--ghost" aria-label="Clear search">
-                    <span class="icon" aria-hidden="true">✕</span>
-                    <span class="sr-only">Clear search</span>
-                </button>
-            </div>
-            <div class="sidebar__section" aria-live="polite">
-                <div class="sidebar__section-label">Tags</div>
-                <div class="sidebar__tags" id="tagList" aria-label="Filter by tag"></div>
-            </div>
-            <div class="sidebar__section">
-                <div class="sidebar__section-label">Notes</div>
-                <div class="sidebar__list" id="noteList" role="list"></div>
-            </div>
-            <button id="newNoteBtn" class="fab" aria-label="New note">
-                <span class="icon" aria-hidden="true">＋</span>
-                <span class="sr-only">Create a new note</span>
-            </button>
         </aside>
         <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
         <main class="workspace" id="workspace">
             <header class="topbar" role="banner">
-                <div class="topbar__left">
-                    <button id="sidebarToggle" class="icon-btn icon-btn--ghost" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="false">
-                        <span class="icon" aria-hidden="true">☰</span>
+                <div class="topbar__primary">
+                    <button id="sidebarToggle" class="icon-btn icon-btn--ghost topbar__toggle" aria-label="Toggle sidebar" aria-controls="sidebar" aria-expanded="false">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-menu"></use></svg>
                         <span class="sr-only">Toggle sidebar</span>
                     </button>
-                    <div class="crumb" role="status" aria-live="polite">
-                        <span class="crumb__pulse" aria-hidden="true"></span>
+                    <div class="topbar__brand">
+                        <span class="topbar__logo" aria-hidden="true">✶</span>
+                        <span class="topbar__brand-name"><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></span>
+                    </div>
+                    <div class="topbar__status" role="status" aria-live="polite">
+                        <span class="status-dot" aria-hidden="true"></span>
                         <span id="noteStatus">Draft</span>
                     </div>
                 </div>
                 <div class="topbar__actions">
-                    <button id="saveBtn" class="topbar__save" type="button">
-                        <span class="icon" aria-hidden="true">●</span>
+                    <button id="saveBtn" class="btn btn--primary" type="button">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-check"></use></svg>
                         <span>Save</span>
                     </button>
-                    <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
-                        <span class="icon" aria-hidden="true">🌓</span>
-                        <span class="sr-only">Toggle theme</span>
-                    </button>
-                    <button id="deleteBtn" class="icon-btn icon-btn--danger" aria-label="Delete note">
-                        <span class="icon" aria-hidden="true">🗑</span>
-                        <span class="sr-only">Delete note</span>
-                    </button>
-                    <button id="shareBtn" class="icon-btn" aria-label="Toggle public link">
-                        <span class="icon" aria-hidden="true">🔗</span>
+                    <div class="topbar__divider" role="presentation"></div>
+                    <button id="shareBtn" class="control-btn" aria-label="Toggle public link">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-link"></use></svg>
                         <span class="sr-only">Toggle public link</span>
                     </button>
-                    <button id="logoutBtn" class="icon-btn" aria-label="Sign out">
-                        <span class="icon" aria-hidden="true">⎋</span>
+                    <button id="deleteBtn" class="control-btn control-btn--danger" aria-label="Delete note">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-trash"></use></svg>
+                        <span class="sr-only">Delete note</span>
+                    </button>
+                    <button id="themeToggle" class="control-btn" aria-label="Toggle theme">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-theme"></use></svg>
+                        <span class="sr-only">Toggle theme</span>
+                    </button>
+                    <button id="logoutBtn" class="control-btn" aria-label="Sign out">
+                        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-logout"></use></svg>
                         <span class="sr-only">Sign out</span>
                     </button>
                 </div>
             </header>
             <section class="note-meta" aria-label="Note metadata">
-                <label class="note-meta__field">
-                    <span class="label">Title</span>
-                    <input id="noteTitle" type="text" placeholder="Untitled note" autocomplete="off">
-                </label>
-                <label class="note-meta__field">
-                    <span class="label">Slug</span>
-                    <input id="noteSlug" type="text" placeholder="auto-generated" autocomplete="off">
-                </label>
-                <label class="note-meta__field">
-                    <span class="label">Tags</span>
-                    <input id="noteTags" type="text" placeholder="comma,separated" autocomplete="off">
-                </label>
-                <label class="toggle note-meta__toggle">
-                    <input type="checkbox" id="notePublic">
-                    <span class="toggle__track" aria-hidden="true"></span>
-                    <span class="toggle__label">Public</span>
-                </label>
+                <div class="note-meta__grid">
+                    <label class="note-meta__field">
+                        <span class="note-meta__label">Title</span>
+                        <input id="noteTitle" type="text" placeholder="Untitled note" autocomplete="off">
+                    </label>
+                    <label class="note-meta__field">
+                        <span class="note-meta__label">Slug</span>
+                        <input id="noteSlug" type="text" placeholder="auto-generated" autocomplete="off">
+                    </label>
+                    <label class="note-meta__field">
+                        <span class="note-meta__label">Tags</span>
+                        <input id="noteTags" type="text" placeholder="comma,separated" autocomplete="off">
+                    </label>
+                    <label class="toggle note-meta__toggle">
+                        <input type="checkbox" id="notePublic">
+                        <span class="toggle__track" aria-hidden="true"></span>
+                        <span class="toggle__label">Public</span>
+                    </label>
+                </div>
             </section>
             <section class="editor-shell" aria-label="Editor">
                 <div class="editor-surface">
@@ -233,7 +282,9 @@ $boot = [
         <button class="note-item" data-slug="">
             <span class="note-item__title"></span>
             <span class="note-item__meta"></span>
-            <span class="note-item__chevron" aria-hidden="true">›</span>
+            <span class="note-item__chevron" aria-hidden="true">
+                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right"></use></svg>
+            </span>
         </button>
     </template>
     <?php echo Markly::renderFootAssets(['css_href' => '/public/md-editor.css', 'js_src' => '/public/md-editor.js']); ?>
