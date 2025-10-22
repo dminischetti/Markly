@@ -86,6 +86,36 @@ function isTempId(id) {
   return typeof id === 'string' && id.startsWith('temp-');
 }
 
+function hasValidId(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed === '' || trimmed === 'undefined' || trimmed === 'null') {
+      return false;
+    }
+  }
+  return true;
+}
+
+function normalizeNoteId(value) {
+  if (!hasValidId(value)) {
+    return null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (/^\d+$/.test(trimmed)) {
+      return Number(trimmed);
+    }
+    return trimmed;
+  }
+  return value;
+}
+
 const savedTheme = getStoredTheme();
 if (savedTheme) {
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -110,7 +140,7 @@ async function bootstrap() {
     const slug = decodeURIComponent(initialHash.replace('#/n/', ''));
     await openNoteBySlug(slug, { silent: true });
   } else if (state.notes.length > 0) {
-    await openNoteById(state.notes[0].id, { silent: true });
+    await openNoteFromMeta(state.notes[0], { silent: true });
   } else {
     createNewNote();
   }
@@ -181,18 +211,34 @@ async function loadNotes() {
   }
 }
 
-async function openNoteById(id, options = {}) {
-  if (!id) {
+async function openNoteFromMeta(note, options = {}) {
+  if (!note) {
     return;
   }
-  if (isTempId(id)) {
-    const loaded = await loadTempNote({ id }, options);
+  if (hasValidId(note.id)) {
+    return openNoteById(note.id, options);
+  }
+  if (note.slug) {
+    return openNoteBySlug(note.slug, options);
+  }
+}
+
+async function openNoteById(id, options = {}) {
+  const normalizedId = normalizeNoteId(id);
+  if (!normalizedId) {
+    return;
+  }
+  if (isTempId(normalizedId)) {
+    const loaded = await loadTempNote({ id: normalizedId }, options);
     if (!loaded) {
       showToast('Draft not available', 'error');
     }
     return;
   }
-  const data = await fetchNote(() => getNoteById(id, { useCache: true }), () => getCachedNote(id));
+  const data = await fetchNote(
+    () => getNoteById(normalizedId, { useCache: true }),
+    () => getCachedNote(normalizedId)
+  );
   if (data) {
     applyNote(data.note || data);
     if (!options.silent) {
@@ -289,15 +335,16 @@ async function loadTempNote(identifier, options = {}) {
 }
 
 function applyNote(note) {
+  const normalizedId = normalizeNoteId(note.id ?? note.note_id ?? note.noteId ?? null);
   state.current = {
-    id: note.id,
+    id: normalizedId,
     slug: note.slug,
     title: note.title,
     tags: Array.isArray(note.tags) ? note.tags : [],
     content: note.content || '',
     is_public: Boolean(note.is_public),
     version: note.version,
-    temp: Boolean(note.temp),
+    temp: Boolean(note.temp) || isTempId(normalizedId),
   };
   state.pendingPublic = state.current.is_public;
   state.dirty = false;
@@ -308,7 +355,7 @@ function applyNote(note) {
   elements.noteTags.value = state.current.tags.join(',');
   elements.notePublic.checked = state.current.is_public;
   updateStatus('Saved');
-  highlightActiveNote(state.current.id);
+  highlightActiveNote(state.current.id, state.current.slug);
   toggleSidebar(false);
   focusEditor();
   renderBacklinks(state.current.slug);
@@ -332,7 +379,7 @@ function createNewNote() {
   elements.noteSlug.value = '';
   elements.noteTags.value = '';
   elements.notePublic.checked = false;
-  highlightActiveNote(null);
+  highlightActiveNote(null, null);
   updateStatus('Draft');
   pushRoute('');
   focusEditor();
@@ -419,8 +466,8 @@ async function saveCurrentNote() {
   } catch (err) {
     if (err instanceof ApiError && err.status === 409) {
       showToast('Version conflict. Reloading…', 'error');
-      if (state.current?.id) {
-        await openNoteById(state.current.id);
+      if (state.current) {
+        await openNoteFromMeta(state.current);
       }
       return;
     }
@@ -455,7 +502,7 @@ async function deleteCurrentNote() {
     removeFromCollections(state.current.id);
     showToast('Deleted', 'success');
     if (state.notes.length > 0) {
-      await openNoteById(state.notes[0].id);
+      await openNoteFromMeta(state.notes[0]);
     } else {
       createNewNote();
     }
@@ -548,16 +595,17 @@ async function queuePublish(note, makePublic) {
 }
 
 function normalizeNoteMeta(note) {
+  const normalizedId = normalizeNoteId(note.id ?? note.note_id ?? note.noteId ?? null);
   return {
-    id: note.id,
-    slug: note.slug,
+    id: normalizedId,
+    slug: note.slug || '',
     title: note.title || 'Untitled',
     tags: Array.isArray(note.tags) ? note.tags : (note.tags ? note.tags.split(',').map((t) => t.trim()).filter(Boolean) : []),
     content: note.content || '',
     updated_at: note.updated_at,
     is_public: Boolean(note.is_public),
     version: note.version || 1,
-    temp: Boolean(note.temp),
+    temp: Boolean(note.temp) || isTempId(normalizedId),
   };
 }
 
@@ -592,14 +640,18 @@ function renderNotesList() {
   const template = document.getElementById('noteListItem');
   state.notes.forEach((note) => {
     const node = template.content.firstElementChild.cloneNode(true);
-    node.dataset.slug = note.slug;
-    node.dataset.id = note.id;
+    node.dataset.slug = note.slug || '';
+    if (hasValidId(note.id)) {
+      node.dataset.id = String(note.id);
+    } else {
+      delete node.dataset.id;
+    }
     node.querySelector('.note-item__title').textContent = note.title || 'Untitled';
     node.querySelector('.note-item__meta').textContent = formatMeta(note);
-    node.addEventListener('click', () => openNoteById(note.id).catch(() => {}));
+    node.addEventListener('click', () => openNoteFromMeta(note).catch(() => {}));
     elements.noteList.appendChild(node);
   });
-  highlightActiveNote(state.current?.id);
+  highlightActiveNote(state.current?.id, state.current?.slug);
 }
 
 function renderTags() {
@@ -658,9 +710,11 @@ function formatMeta(note) {
   return parts.join(' · ');
 }
 
-function highlightActiveNote(id) {
+function highlightActiveNote(id, slug) {
   document.querySelectorAll('.note-item').forEach((el) => {
-    if (id && String(el.dataset.id) === String(id)) {
+    const matchesId = id && String(el.dataset.id) === String(id);
+    const matchesSlug = !id && slug && el.dataset.slug === slug;
+    if (matchesId || matchesSlug) {
       el.classList.add('active');
     } else {
       el.classList.remove('active');
@@ -788,8 +842,8 @@ async function syncOutbox() {
     });
     showToast('Synced changes', 'success');
     await loadNotes();
-    if (state.current?.id) {
-      await openNoteById(state.current.id, { silent: true });
+    if (state.current) {
+      await openNoteFromMeta(state.current, { silent: true });
     }
   } catch (err) {
     console.error('Sync error', err);
