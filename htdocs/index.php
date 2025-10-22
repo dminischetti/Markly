@@ -261,10 +261,14 @@ $boot = [
                         <span class="note-meta__label">Tags</span>
                         <input id="noteTags" type="text" placeholder="comma,separated" autocomplete="off">
                     </label>
-                    <label class="toggle note-meta__toggle">
+                    <label class="note-meta__field note-visibility">
+                        <span class="note-meta__label">Visibility</span>
                         <input type="checkbox" id="notePublic">
-                        <span class="toggle__track" aria-hidden="true"></span>
-                        <span class="toggle__label">Public</span>
+                        <span class="note-visibility__pill" aria-hidden="true">
+                            <span class="note-visibility__option note-visibility__option--private">Private</span>
+                            <span class="note-visibility__option note-visibility__option--public">Public</span>
+                            <span class="note-visibility__thumb"></span>
+                        </span>
                     </label>
                 </div>
             </section>
