@@ -61,3 +61,15 @@ export function refreshEditor() {
     instance.refresh();
   }
 }
+
+export function undo() {
+  if (instance && typeof instance.undo === 'function') {
+    instance.undo();
+  }
+}
+
+export function redo() {
+  if (instance && typeof instance.redo === 'function') {
+    instance.redo();
+  }
+}
