@@ -54,7 +54,7 @@ The SVG above animates the core loop — drafting a note, going offline, and wat
 | --- | --- |
 | Backend runtime | PHP 8, InfinityFree-friendly deployment (no Composer) |
 | Data store | MySQL 5.x compatible schema with FULLTEXT fallback |
-| Domain services | Plain PHP classes in `src/` (Auth, NotesRepo, Csrf, TextUtil, LinksRepo) |
+| Domain services | Plain PHP classes in `/htdocs/src/` (Auth, NotesRepo, Csrf, TextUtil, LinksRepo) |
 | Front-end | Vanilla JS modules (`app.js`, `api.js`, `db.js`, `editor.js`), Markly editor component |
 | Offline shell | Service worker + IndexedDB outbox + responsive OKLCH-themed UI |
 
@@ -62,11 +62,11 @@ The SVG above animates the core loop — drafting a note, going offline, and wat
 
 - **10-second pitch:** Offline-capable Markdown workspace, built from scratch with PHP, MySQL, and vanilla JS — no frameworks or build steps.
 - **Demo account:** `admin@example.com` / `admin123` (sessions stay active thanks to demo-mode session config).
-- **Docs to skim:** [Architecture overview](docs/architecture.md) · [Changelog](CHANGELOG.md)
+- **Docs to skim:** [Architecture overview](htdocs/docs/architecture.md) · [Changelog](CHANGELOG.md)
 
 ## 🛠 How It Works Internally
 
-**Backend** – `/htdocs/index.php` handles routing, boots secure sessions, and passes Markly constants into the SPA. Domain classes in `src/` wrap authentication, text utilities, CSRF, and notes/backlink persistence with optimistic locking.
+**Backend** – `/htdocs/index.php` handles routing, boots secure sessions, and passes Markly constants into the SPA. Domain classes in `/htdocs/src/` wrap authentication, text utilities, CSRF, and notes/backlink persistence with optimistic locking.
 
 **API layer** – `/htdocs/api/*.php` endpoints validate CSRF tokens, call repositories, and respond through `Markly\Response::json()` (exit-after-output, cache disabled). All SQL uses bound parameters, and ETags power optimistic concurrency.
 
@@ -79,12 +79,12 @@ The SVG above animates the core loop — drafting a note, going offline, and wat
 ### 1. Create the database
 
 1. Create a MySQL database with collation `utf8mb4_unicode_ci`.
-2. Import `sql/schema.sql` to create tables, foreign keys, and the FULLTEXT index.
-3. Import `sql/seed.sql` for the demo account plus sample notes and tags.
+2. Import `htdocs/sql/schema.sql` to create tables, foreign keys, and the FULLTEXT index.
+3. Import `htdocs/sql/seed.sql` for the demo account plus sample notes and tags.
 
 ### 2. Configure the app
 
-1. Copy `config/config.example.php` to `config/config.php`.
+1. Copy `htdocs/config/config.example.php` to `htdocs/config/config.php`.
 2. Update the DSN, username, password, and optional `base_url`. Set `debug => true` for local error output, `demo_mode => true` to keep the showcase session alive, and tweak `session_regen_interval` (seconds) for production rotation.
 3. Upload the entire `htdocs/` directory (keeping paths intact) to your InfinityFree `htdocs` folder or local web root.
 4. Ensure PHP can write to its temp directory — Markly already sets `session_save_path(sys_get_temp_dir());`.
@@ -131,8 +131,8 @@ Feel free to change the password or add additional users directly in the `users`
 
 ## ✅ QA Checklist
 
-- [ ] Database created and both `schema.sql` + `seed.sql` imported.
-- [ ] `config/config.php` updated with live credentials.
+- [ ] Database created and both `htdocs/sql/schema.sql` + `htdocs/sql/seed.sql` imported.
+- [ ] `htdocs/config/config.php` updated with live credentials.
 - [ ] `/htdocs` (including `.htaccess`, `manifest.webmanifest`, and `sw.js`) uploaded to the server root.
 - [ ] Service worker registered successfully (check browser DevTools → Application → Service Workers).
 - [ ] Login with the demo account works and sessions persist across reloads.

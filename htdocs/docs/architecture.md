@@ -16,7 +16,7 @@ flowchart LR
 ```
 
 ## Layers
-**Backend** – Domain services in `src/` (Auth, NotesRepo, LinksRepo, Csrf, Response, TextUtil) encapsulate persistence and security concerns. APIs are thin scripts that decode payloads, validate CSRF tokens, and delegate to repositories. All SQL uses prepared statements with optimistic locking and ETag headers to prevent lost updates.
+**Backend** – Domain services in `/htdocs/src/` (Auth, NotesRepo, LinksRepo, Csrf, Response, TextUtil) encapsulate persistence and security concerns. APIs are thin scripts that decode payloads, validate CSRF tokens, and delegate to repositories. All SQL uses prepared statements with optimistic locking and ETag headers to prevent lost updates.
 
 **Frontend** – `htdocs/assets/js/app.js` orchestrates state, keyboard shortcuts, drawer UI, and toast notifications. `api.js` owns fetch calls, CSRF refresh, and ETag memoisation. `db.js` namespaces IndexedDB stores with `mdpro_` prefixes, deduplicates queued mutations, and exposes listeners for UI badges. `editor.js` binds toolbar actions to the existing Markly textarea/preview component, while `graph.js` can display backlinks when data is available.
 
