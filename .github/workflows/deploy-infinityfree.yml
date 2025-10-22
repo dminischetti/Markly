@@ -1,0 +1,37 @@
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+        working-directory: ./htdocs
+
+      - name: Deploy via FTP to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./htdocs
+          server-dir: /htdocs
+          protocol: ftps
+          port: 21
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            **/tests/**
+            **/sql/**
+            **/docs/**
+            **/*.yml
