@@ -199,6 +199,14 @@ async function openNoteBySlug(slug, options = {}) {
 async function fetchNote(apiFn, cacheFn) {
   try {
     const payload = await apiFn();
+    if (payload && payload.cached) {
+      const cached = await cacheFn();
+      if (cached) {
+        updateCollections(cached);
+        return cached;
+      }
+      return null;
+    }
     const note = payload.note || payload;
     if (note) {
       cacheNote(note).catch(() => {});
