@@ -12,12 +12,39 @@
     return { words, chars, lines };
   }
 
+  function normalizeBlocks(raw) {
+    if (typeof raw !== 'string') {
+      return '';
+    }
+
+    const normalized = raw.replace(/\r\n?/g, '\n');
+    const lines = normalized.split('\n');
+    const blockPattern = /^(#{1,6}\s+|[-+*]\s+|\d+\.\s+|```|~~~|>\s?|---$|___$|===|\|.*\|)/;
+    const result = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (
+        blockPattern.test(line) &&
+        result.length > 0 &&
+        result[result.length - 1].trim() !== '' &&
+        !(i > 0 && blockPattern.test(lines[i - 1]))
+      ) {
+        result.push('');
+      }
+      result.push(line);
+    }
+
+    return result.join('\n');
+  }
+
   function renderMarkdown(raw) {
     if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
       return raw;
     }
+    const prepared = normalizeBlocks(raw);
     marked.setOptions({ gfm: true, breaks: false, mangle: false, headerIds: true });
-    return DOMPurify.sanitize(marked.parse(raw));
+    return DOMPurify.sanitize(marked.parse(prepared));
   }
 
   function init(options) {
