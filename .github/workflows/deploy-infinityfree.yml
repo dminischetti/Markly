@@ -1,4 +1,4 @@
-name: Deploy to InfinityFree
+ name: Deploy to InfinityFree
 
 on:
   push:
@@ -19,8 +19,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          local-dir: ./htdocs
-          server-dir: /htdocs
+          local-dir: ./htdocs/
+          server-dir: /htdocs/
           protocol: ftps
           port: 21
           exclude: |
