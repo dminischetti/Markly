@@ -37,46 +37,46 @@ final class Markly
       <div class="formatbar" id="formatbar" role="toolbar" aria-label="Formatting">
         <div class="formatbar__group formatbar__group--modes" role="group" aria-label="Workspace layout">
           <button class="format-btn format-btn--toggle" title="Edit mode" data-action="view-edit" aria-pressed="true">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-edit"></use></svg>
+            <i class="ph ph-pencil-line" aria-hidden="true"></i>
             <span class="sr-only">Show editor</span>
           </button>
           <button class="format-btn format-btn--toggle" title="Preview mode" data-action="view-preview" aria-pressed="true">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-eye"></use></svg>
+            <i class="ph ph-eye" aria-hidden="true"></i>
             <span class="sr-only">Show preview</span>
           </button>
           <button class="format-btn format-btn--toggle" title="Toggle split view" data-action="layout" aria-pressed="true">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-layout"></use></svg>
+            <i class="ph ph-layout" aria-hidden="true"></i>
             <span class="sr-only">Toggle split layout</span>
           </button>
         </div>
         <div class="formatbar__divider" aria-hidden="true"></div>
         <div class="formatbar__group" role="group" aria-label="Formatting shortcuts">
           <button class="format-btn" title="Bold (Ctrl/⌘+B)" data-action="bold">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-bold"></use></svg>
+            <i class="ph ph-text-b" aria-hidden="true"></i>
             <span class="sr-only">Bold</span>
           </button>
           <button class="format-btn" title="Italic (Ctrl/⌘+I)" data-action="italic">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-italic"></use></svg>
+            <i class="ph ph-text-italic" aria-hidden="true"></i>
             <span class="sr-only">Italic</span>
           </button>
           <button class="format-btn" title="Heading" data-action="h1">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-heading"></use></svg>
+            <i class="ph ph-text-h" aria-hidden="true"></i>
             <span class="sr-only">Heading</span>
           </button>
           <button class="format-btn" title="List" data-action="list">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-list"></use></svg>
+            <i class="ph ph-list-bullets" aria-hidden="true"></i>
             <span class="sr-only">List</span>
           </button>
           <button class="format-btn" title="Link" data-action="link">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-link"></use></svg>
+            <i class="ph ph-link" aria-hidden="true"></i>
             <span class="sr-only">Link</span>
           </button>
           <button class="format-btn" title="Code block" data-action="code">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-code"></use></svg>
+            <i class="ph ph-code" aria-hidden="true"></i>
             <span class="sr-only">Code block</span>
           </button>
           <button class="format-btn" title="Table" data-action="table">
-            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-table"></use></svg>
+            <i class="ph ph-table" aria-hidden="true"></i>
             <span class="sr-only">Table</span>
           </button>
         </div>
@@ -84,7 +84,7 @@ final class Markly
       </div>
       <textarea id="editor" placeholder="Write Markdown here…"></textarea>
     </section>
-    <div class="editor-resizer" id="splitResizer" role="separator" aria-orientation="vertical" aria-label="Resize preview"></div>
+    <div class="editor-resizer" id="splitResizer" role="separator" aria-orientation="vertical" aria-label="Resize preview" x-data="resizerState()" x-on:pointerdown="activate($event)" x-on:pointerup.window="deactivate()" x-on:pointercancel.window="deactivate()" x-bind:class="{ 'is-active': active }"></div>
     <section class="preview-pane" id="previewCard" aria-label="Markdown preview">
       <header class="pane-header">
         <h2 class="pane-title">Preview</h2>
