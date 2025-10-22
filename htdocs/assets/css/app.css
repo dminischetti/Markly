@@ -693,61 +693,122 @@ textarea:focus-visible {
   color: color-mix(in oklch, var(--oklch-subtle) 80%, transparent);
 }
 
-.note-meta__toggle {
-  flex-direction: row;
-  align-items: center;
+.note-visibility {
+  position: relative;
   gap: var(--space-3);
   cursor: pointer;
-  position: relative;
 }
 
-.note-meta__toggle input {
+.note-visibility input {
   position: absolute;
-  opacity: 0;
   width: 1px;
   height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.toggle__track {
-  width: 2.8rem;
-  height: 1.5rem;
+.note-visibility__pill {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem;
   border-radius: 999px;
   border: 1px solid color-mix(in oklch, var(--oklch-border) 45%, transparent);
-  background: color-mix(in oklch, var(--oklch-layer) 70%, transparent);
-  position: relative;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
-}
-
-.toggle__track::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0.25rem;
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
-  background: color-mix(in oklch, var(--oklch-subtle) 85%, transparent);
-  transform: translate(0, -50%);
-  transition: transform var(--transition-fast), background var(--transition-fast);
-}
-
-.toggle__label {
+  background: color-mix(in oklch, var(--oklch-layer) 84%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, var(--oklch-border) 22%, transparent);
+  min-height: 2.5rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklch, var(--oklch-muted) 70%, transparent);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
-.note-meta__toggle input:checked + .toggle__track {
-  background: color-mix(in oklch, var(--oklch-accent) 35%, transparent);
+.note-visibility__thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--oklch-layer) 94%, transparent);
+  box-shadow: 0 12px 24px color-mix(in oklch, var(--oklch-border) 28%, transparent);
+  transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.note-visibility__option {
+  position: relative;
+  z-index: 1;
+  padding: 0.35rem 0.4rem;
+  text-align: center;
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast);
+}
+
+.note-visibility__option--private {
+  color: var(--oklch-text);
+}
+
+.note-visibility__option--public {
+  color: color-mix(in oklch, var(--oklch-muted) 60%, transparent);
+}
+
+.note-visibility input:focus-visible + .note-visibility__pill {
   border-color: var(--oklch-accent);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--oklch-accent) 24%, transparent), inset 0 1px 0 color-mix(in oklch, var(--oklch-border) 22%, transparent);
 }
 
-.note-meta__toggle input:checked + .toggle__track::after {
-  transform: translate(1.25rem, -50%);
-  background: var(--oklch-accent-contrast);
+.note-visibility input:checked + .note-visibility__pill {
+  border-color: color-mix(in oklch, var(--oklch-accent) 55%, transparent);
+  background: color-mix(in oklch, var(--oklch-layer) 94%, transparent);
+  box-shadow: 0 18px 40px color-mix(in oklch, var(--oklch-accent) 16%, transparent);
 }
 
-.note-meta__toggle input:focus-visible + .toggle__track {
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--oklch-accent) 28%, transparent);
+.note-visibility input:checked + .note-visibility__pill .note-visibility__thumb {
+  transform: translateX(100%);
+  background: var(--oklch-accent);
+  box-shadow: 0 18px 36px color-mix(in oklch, var(--oklch-accent) 32%, transparent);
+}
+
+.note-visibility input:checked + .note-visibility__pill .note-visibility__option--public {
+  color: var(--oklch-accent-contrast);
+}
+
+.note-visibility input:checked + .note-visibility__pill .note-visibility__option--private {
+  color: color-mix(in oklch, var(--oklch-muted) 55%, transparent);
+}
+
+[data-theme="dark"] .note-visibility__pill {
+  background: color-mix(in oklch, var(--oklch-layer) 92%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-border-strong) 55%, transparent);
+  color: color-mix(in oklch, var(--oklch-subtle) 85%, transparent);
+}
+
+[data-theme="dark"] .note-visibility__thumb {
+  background: color-mix(in oklch, var(--oklch-layer-subtle) 85%, transparent);
+  box-shadow: 0 12px 28px color-mix(in oklch, var(--oklch-border-strong) 35%, transparent);
+}
+
+[data-theme="dark"] .note-visibility input:checked + .note-visibility__pill {
+  background: color-mix(in oklch, var(--oklch-layer) 96%, transparent);
+  border-color: color-mix(in oklch, var(--oklch-accent) 65%, transparent);
+  box-shadow: 0 20px 44px color-mix(in oklch, var(--oklch-accent) 22%, transparent);
+}
+
+[data-theme="dark"] .note-visibility input:checked + .note-visibility__pill .note-visibility__thumb {
+  background: var(--oklch-accent);
+}
+
+[data-theme="dark"] .note-visibility input:focus-visible + .note-visibility__pill {
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--oklch-accent) 30%, transparent), inset 0 1px 0 color-mix(in oklch, var(--oklch-border) 18%, transparent);
 }
 
 .editor-shell {

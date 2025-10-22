@@ -52,15 +52,18 @@
     const preview = $(options.previewId || 'preview');
     const statsEl = $(options.statsId || 'stats');
     const grid = $(options.gridId || 'grid');
-    const toggleBtn = $(options.toggleId || 'toggle');
+    const toggleKey = Object.prototype.hasOwnProperty.call(options, 'toggleId')
+      ? options.toggleId
+      : 'toggle';
+    const toggleBtn = toggleKey ? $(toggleKey) : null;
     const previewCard = $(options.previewCardId || 'previewCard');
     const formatbar = $(options.formatBarId || 'formatbar');
 
-    if (!editor || !preview || !statsEl || !grid || !toggleBtn || !previewCard || !formatbar) {
+    if (!editor || !preview || !statsEl || !grid || !previewCard || !formatbar) {
       return null;
     }
 
-    let previewOpen = false;
+    let previewOpen = true;
     let suppressChange = false;
     if (options.initialValue) {
       editor.value = options.initialValue;
@@ -74,15 +77,14 @@
       }
     }
 
-    function updatePreview() {
-      if (!previewOpen) {
-        return;
-      }
+    function renderPreview() {
       preview.innerHTML = renderMarkdown(editor.value);
     }
 
     function renderAll() {
-      updatePreview();
+      if (previewOpen) {
+        renderPreview();
+      }
       updateStats();
       if (!suppressChange && typeof options.onChange === 'function') {
         options.onChange(editor.value);
@@ -90,15 +92,15 @@
     }
 
     function togglePreview(force) {
-      previewOpen = typeof force === 'boolean' ? force : !previewOpen;
-      toggleBtn.setAttribute('aria-pressed', String(previewOpen));
-      if (previewOpen) {
-        previewCard.hidden = false;
-        grid.classList.add('is-split');
-        updatePreview();
-      } else {
-        previewCard.hidden = true;
-        grid.classList.remove('is-split');
+      const desiredState = typeof force === 'boolean' ? force : !previewOpen;
+      previewOpen = desiredState;
+      previewCard.hidden = !desiredState;
+      grid.classList.toggle('is-split', desiredState);
+      if (toggleBtn) {
+        toggleBtn.setAttribute('aria-pressed', String(desiredState));
+      }
+      if (desiredState) {
+        renderPreview();
       }
       if (typeof options.onPreviewToggle === 'function') {
         options.onPreviewToggle(previewOpen);
@@ -122,9 +124,11 @@
       renderAll();
     }
 
-    toggleBtn.addEventListener('click', function () {
-      togglePreview();
-    });
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        togglePreview();
+      });
+    }
 
     formatbar.addEventListener('click', function (event) {
       const btn = event.target.closest('button');
@@ -179,6 +183,7 @@
       }
     });
 
+    togglePreview(true);
     renderAll();
 
     return {
