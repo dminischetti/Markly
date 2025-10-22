@@ -146,6 +146,7 @@ $boot = [
                     <span id="noteStatus">Draft</span>
                 </div>
                 <div class="topbar__actions">
+                    <button id="saveBtn" class="topbar__save" type="button">Save</button>
                     <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">🌓</button>
                     <button id="deleteBtn" class="icon-btn" aria-label="Delete note">🗑</button>
                     <button id="shareBtn" class="icon-btn" aria-label="Toggle public link">🔗</button>
