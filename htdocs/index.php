@@ -128,7 +128,6 @@ $boot = [
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/app.css">
     <script>
         (function () {
             var cookieTheme = <?php echo json_encode($initialTheme, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
@@ -262,11 +261,12 @@ $boot = [
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-+z3O8DqRL3OjaxAg/P6nxsVXni4eWh05rq6ArlTc95xJ3Adxpv8uKXuX4nHCqB6f+GO6zkRgZNpmjDoE7YOhkA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/simplemde@1.11.2/dist/simplemde.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.13.5/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/app.css">
     <?php echo Markly::renderHeadAssets(['css_href' => '/public/md-editor.css', 'js_src' => '/public/md-editor.js']); ?>
     <meta name="csrf-token" content="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
 </head>
 <body class="min-h-screen bg-surface text-slate-900 transition-colors duration-300 dark:bg-slate-925 dark:text-slate-100">
-    <div class="relative flex min-h-screen overflow-hidden bg-surface transition-colors duration-300 dark:bg-slate-925">
+    <div class="relative flex min-h-screen overflow-hidden">
         <div id="sidebarOverlay" class="fixed inset-0 z-30 hidden bg-slate-900/40 backdrop-blur-sm transition-opacity lg:hidden" aria-hidden="true"></div>
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-[min(360px,92vw)] -translate-x-full flex-col overflow-y-auto border-r border-border bg-white/80 px-6 pb-8 pt-6 shadow-soft backdrop-blur transition-transform duration-300 ease-out dark:border-white/10 dark:bg-white/5 lg:static lg:translate-x-0" aria-label="Notes list">
             <div class="flex items-start justify-between gap-3">
