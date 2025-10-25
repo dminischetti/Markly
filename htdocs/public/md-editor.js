@@ -198,26 +198,6 @@
       }
     }
 
-    function performUndo() {
-      editor.focus();
-      try {
-        document.execCommand('undo');
-      } catch (err) {
-        // ignore unsupported command
-      }
-      renderAll();
-    }
-
-    function performRedo() {
-      editor.focus();
-      try {
-        document.execCommand('redo');
-      } catch (err) {
-        // ignore unsupported command
-      }
-      renderAll();
-    }
-
     function togglePreview(force) {
       if (layoutMode === 'split') {
         if (typeof force === 'boolean') {
@@ -400,8 +380,6 @@
         return layoutMode === 'split' || previewOpen;
       },
       refresh: renderAll,
-      undo: performUndo,
-      redo: performRedo,
       element: editor,
     };
   }
