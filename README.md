@@ -6,7 +6,7 @@
 
 **Demo Login:** `admin@example.com` / `admin123`
 
-**Live Demo:** [markly.infinityfreeapp.com](https://markly.infinityfreeapp.com/)
+**Live Demo:** [minischetti.infinityfreeapp.com](https://minischetti.infinityfreeapp.com/)
 
 > A recruiter-friendly showcase project: a login-protected, offline-capable Markdown notebook built with pure PHP, MySQL, and vanilla web tech — deployable as-is on InfinityFree.
 
@@ -22,9 +22,9 @@ Dark mode:
 
 ## 🚀 Live Demo
 
-[![Markly live preview](htdocs/assets/screenshots/light.svg)](https://markly.infinityfreeapp.com/)
+[![Markly live preview](htdocs/assets/screenshots/light.svg)](https://minischetti.infinityfreeapp.com/)
 
-[https://markly.infinityfreeapp.com/](https://markly.infinityfreeapp.com/)
+[https://minischetti.infinityfreeapp.com/](https://minischetti.infinityfreeapp.com/)
 
 ## 🎞️ Animated Walkthrough
 
