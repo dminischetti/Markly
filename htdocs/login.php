@@ -50,28 +50,22 @@ $token = Csrf::issue();
 </head>
 <body class="auth-body">
     <main class="auth-card" role="main">
-        <header class="auth-header">
-            <span class="auth-logo" aria-hidden="true">✶</span>
-            <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
-            <p class="auth-subtitle"><?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
-        </header>
+        <h1><?php echo htmlspecialchars(Constants::APP_NAME, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h1>
+        <p class="auth-subtitle"><?php echo htmlspecialchars(Constants::APP_TAGLINE, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
         <?php if ($error !== null): ?>
             <div class="auth-error" role="alert"><?php echo htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></div>
         <?php endif; ?>
         <form method="post" class="auth-form" novalidate>
             <input type="hidden" name="_token" value="<?php echo htmlspecialchars($token, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
             <label class="field">
-                <span class="field__label">Email</span>
+                <span>Email</span>
                 <input type="email" name="email" autocomplete="email" required>
             </label>
             <label class="field">
-                <span class="field__label">Password</span>
+                <span>Password</span>
                 <input type="password" name="password" autocomplete="current-password" required>
             </label>
-            <button type="submit" class="btn-primary">
-                <span class="icon" aria-hidden="true">→</span>
-                <span>Sign in</span>
-            </button>
+            <button type="submit" class="btn-primary">Sign in</button>
         </form>
         <p class="auth-footer">Demo account: <code>admin@example.com</code> / <code>admin123</code></p>
     </main>

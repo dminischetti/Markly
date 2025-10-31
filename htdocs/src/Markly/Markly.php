@@ -29,66 +29,34 @@ final class Markly
     {
         return <<<'HTML'
 <div class="wrap">
-  <div class="editor-grid" id="grid" data-layout="split">
-    <section class="editor-pane" id="editorPane" aria-label="Markdown editor">
-      <header class="pane-header">
-        <h2 class="pane-title">Editor</h2>
-      </header>
+  <div class="grid" id="grid">
+    <section class="card" id="editorCard">
+      <h6>Editor</h6>
+
       <div class="formatbar" id="formatbar" role="toolbar" aria-label="Formatting">
-        <div class="formatbar__group formatbar__group--modes" role="group" aria-label="Workspace layout">
-          <button class="format-btn format-btn--toggle" title="Edit mode" data-action="view-edit" aria-pressed="true">
-            <i class="ph ph-pencil-line" aria-hidden="true"></i>
-            <span class="sr-only">Show editor</span>
-          </button>
-          <button class="format-btn format-btn--toggle" title="Preview mode" data-action="view-preview" aria-pressed="true">
-            <i class="ph ph-eye" aria-hidden="true"></i>
-            <span class="sr-only">Show preview</span>
-          </button>
-          <button class="format-btn format-btn--toggle" title="Toggle split view" data-action="layout" aria-pressed="true">
-            <i class="ph ph-layout" aria-hidden="true"></i>
-            <span class="sr-only">Toggle split layout</span>
-          </button>
-        </div>
-        <div class="formatbar__divider" aria-hidden="true"></div>
-        <div class="formatbar__group" role="group" aria-label="Formatting shortcuts">
-          <button class="format-btn" title="Bold (Ctrl/⌘+B)" data-action="bold">
-            <i class="ph ph-text-b" aria-hidden="true"></i>
-            <span class="sr-only">Bold</span>
-          </button>
-          <button class="format-btn" title="Italic (Ctrl/⌘+I)" data-action="italic">
-            <i class="ph ph-text-italic" aria-hidden="true"></i>
-            <span class="sr-only">Italic</span>
-          </button>
-          <button class="format-btn" title="Heading" data-action="h1">
-            <i class="ph ph-text-h" aria-hidden="true"></i>
-            <span class="sr-only">Heading</span>
-          </button>
-          <button class="format-btn" title="List" data-action="list">
-            <i class="ph ph-list-bullets" aria-hidden="true"></i>
-            <span class="sr-only">List</span>
-          </button>
-          <button class="format-btn" title="Link" data-action="link">
-            <i class="ph ph-link" aria-hidden="true"></i>
-            <span class="sr-only">Link</span>
-          </button>
-          <button class="format-btn" title="Code block" data-action="code">
-            <i class="ph ph-code" aria-hidden="true"></i>
-            <span class="sr-only">Code block</span>
-          </button>
-          <button class="format-btn" title="Table" data-action="table">
-            <i class="ph ph-table" aria-hidden="true"></i>
-            <span class="sr-only">Table</span>
-          </button>
-        </div>
-        <div class="formatbar__spacer" aria-hidden="true"></div>
+        <button class="btn" title="Bold (Ctrl/⌘+B)" data-action="bold"><b>B</b></button>
+        <button class="btn" title="Italic (Ctrl/⌘+I)" data-action="italic"><i>I</i></button>
+        <button class="btn" title="Heading" data-action="h1">H1</button>
+        <button class="btn" title="List" data-action="list">• List</button>
+        <button class="btn" title="Link" data-action="link">🔗</button>
+        <button class="btn" title="Code block" data-action="code">{ }</button>
+        <button class="btn" title="Table" data-action="table">⌗</button>
+
+        <span class="formatbar__spacer" aria-hidden="true"></span>
+
+        <button class="btn" id="toggle" title="Toggle preview" aria-pressed="false" aria-label="Toggle preview">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="24" height="24" aria-hidden="true">
+            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-480H200v480Zm280-80q-82 0-146.5-44.5T240-440q29-71 93.5-115.5T480-600q82 0 146.5 44.5T720-440q-29 71-93.5 115.5T480-280Zm0-60q56 0 102-26.5t72-73.5q-26-47-72-73.5T480-540q-56 0-102 26.5T306-440q26 47 72 73.5T480-340Zm0-100Zm0 60q25 0 42.5-17.5T540-440q0-25-17.5-42.5T480-500q-25 0-42.5 17.5T420-440q0 25 17.5 42.5T480-380Z"/>
+          </svg>
+        </button>
       </div>
+
       <textarea id="editor" placeholder="Write Markdown here…"></textarea>
+      <div class="stats" id="stats">0 words · 0 characters · 0 lines</div>
     </section>
-    <div class="editor-resizer" id="splitResizer" role="separator" aria-orientation="vertical" aria-label="Resize preview" x-data="resizerState()" x-on:pointerdown="activate($event)" x-on:pointerup.window="deactivate()" x-on:pointercancel.window="deactivate()" x-bind:class="{ 'is-active': active }"></div>
-    <section class="preview-pane" id="previewCard" aria-label="Markdown preview">
-      <header class="pane-header">
-        <h2 class="pane-title">Preview</h2>
-      </header>
+
+    <section class="card" id="previewCard" hidden>
+      <h6>Preview</h6>
       <article class="preview prose" id="preview"></article>
     </section>
   </div>
