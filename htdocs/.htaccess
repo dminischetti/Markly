@@ -1,0 +1,14 @@
+Options -Indexes
+AddType application/manifest+json .webmanifest
+AddType text/javascript .js
+
+<IfModule mod_headers.c>
+  <FilesMatch "sw\\.js$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header set Service-Worker-Allowed "/"
+  </FilesMatch>
+  <FilesMatch "\\.(webmanifest)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
